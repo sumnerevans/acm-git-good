@@ -1,7 +1,9 @@
-# lug-git-talk
-A presentation covering a bunch of Git. Hosted on GitLab. For the Mines Linux Users Group (LUG).
+# ACM Git Good
+
+A presentation about how to understand and use Git.
 
 ## Topics
+
 - What is Git and why you should use it
 - How to install Git and use it locally
 - Merging

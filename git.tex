@@ -1,42 +1,48 @@
-\documentclass{lug}
+\documentclass{beeper}
 
-\usepackage{csquotes}
-\MakeOuterQuote{"}
 \usepackage{listings}
 
-\title{Git}
+\title{Git Good}
+\subtitle{How to understand Git}
 \author{Sumner Evans}
+\institute{Mines ACM}
+\date{14 February 2023}
 
 \begin{document}
 
-\section{Introduction}
-
-\begin{frame}
-    \frametitle{What is Git?}
-
-    \begin{itemize}[<+->]
-        \item Git is a system which tracks changes made to a code base.
-        \item Git was created by Linus Torvalds to help facilitate Linux kernel
-            development.
-        \item Linus's motto when he built Git was to take Concurrent Version
-            System (CVS) as an example of what \textit{not} to do and if in
-            doubt, make the opposite decision.  \footnotemark
+\begin{frame}{A bit about me}
+    My name is Sumner, I'm a \textbf{software engineer at Beeper}.
+    \begin{itemize}
+        \item I graduated from Colorado School of Mines in 2018 with my
+            bachelor's in CS and 2019 with a master's in CS.
+        \item I am an adjunct professor. Currently I'm teaching CSCI 341. I've
+            taught 400, 406, and 564 in the past as well.
+        \item I enjoy skiing, volleyball, and soccer.
+        \item I'm a 4th degree black belt in ATA taekwondo.
     \end{itemize}
-
-    \uncover<3>{\footnotetext[1]{https://en.wikipedia.org/wiki/Git}}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Why use Version Control? I}
+\begin{frame}{Overview}
+    \setbeamertemplate{section in toc}[sections numbered]
+    \tableofcontents[hideallsubsections]
+
+    \begin{block}{This talk is interactive!}
+        If you have questions at any point, feel free to interrupt me.
+    \end{block}
+\end{frame}
+
+\section{Why use Git?}
+
+\begin{frame}{Why use Git? I}
 
     Example Scenario:
 
     \begin{enumerate}[<+->]
-        \item You start a project called "my-proj" and write a ton of code.
+        \item You start a project called ``my-proj'' and write a ton of code.
         \item You finally get it to (kinda) work.
-        \item You decide to make a copy of "my-proj" for backup purposes.
-        \item You continue development on "my-proj" but then screw something up
-            really bad.
+        \item You decide to make a copy of ``my-proj'' for backup purposes.
+        \item You continue development on ``my-proj'' but then screw something
+            up really bad.
         \item You decide to revert back to your copy.
         \item Then you realize your copy doesn't have a bug fix that you
             actually wanted.
@@ -47,15 +53,15 @@
     \uncover<8>{This is terrible.}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Why use Version Control? II}
+\begin{frame}{Why use Git? II}
 
     Another Scenario:
 
     \begin{enumerate}[<+->]
         \item You start working on a project with a partner.
         \item You write a bunch of code.
-        \item You email the code in a .zip file, then go home for the weekend.
+        \item You email the code in a \texttt{.zip} file, then go home for the
+            weekend.
         \item You and your partner had decided to work on two separate tasks
             over the weekend so you make some changes to the code and your
             partner makes some changes to the code.
@@ -68,8 +74,7 @@
     \uncover<7>{This is awful.}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Why use Version Control? III}
+\begin{frame}{Why use Git? III}
 
     How Version Control Systems (VCS) solve this:
 
@@ -81,6 +86,25 @@
             very elegant in handling merge conflicts such as this.
     \end{itemize}
 \end{frame}
+
+\section{What is Git?}
+
+\begin{frame}{Git is a distributed version control system}
+    \begin{itemize}[<+->]
+        \item \textbf{Distributed} because you can use it without being
+            connected to a central server.
+        \item \textbf{Version control} 
+        \item Git was created by Linus Torvalds to help facilitate Linux kernel
+            development.
+        \item Linus's motto when he built Git was to take Concurrent Version
+            System (CVS) as an example of what \textit{not} to do and if in
+            doubt, make the opposite decision.  \footnotemark
+    \end{itemize}
+
+    \uncover<3>{\footnotetext[1]{https://en.wikipedia.org/wiki/Git}}
+\end{frame}
+
+\section{Understanding the Git data model}
 
 \begin{frame}
     \frametitle{Why use Git?}
