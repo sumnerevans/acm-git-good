@@ -33,9 +33,7 @@
 
 \section{Why use Git?}
 
-\begin{frame}{Why use Git? I}
-
-    Example Scenario:
+\begin{frame}{Example Scenario 1}
 
     \begin{enumerate}[<+->]
         \item You start a project called ``my-proj'' and write a ton of code.
@@ -53,9 +51,7 @@
     \uncover<8>{This is terrible.}
 \end{frame}
 
-\begin{frame}{Why use Git? II}
-
-    Another Scenario:
+\begin{frame}{Example Scenario 2}
 
     \begin{enumerate}[<+->]
         \item You start working on a project with a partner.
@@ -74,9 +70,9 @@
     \uncover<7>{This is awful.}
 \end{frame}
 
-\begin{frame}{Why use Git? III}
+\begin{frame}{Version Control Systems}
 
-    How Version Control Systems (VCS) solve this:
+    Version Control Systems (VCSs) such as Git solve these problems.
 
     \begin{itemize}[<+->]
         \item VCS keeps track of \textit{revisions}, changes in the code in
@@ -87,85 +83,134 @@
     \end{itemize}
 \end{frame}
 
-\section{What is Git?}
+\begin{frame}{Git is popular}
 
-\begin{frame}{Git is a distributed version control system}
-    \begin{itemize}[<+->]
-        \item \textbf{Distributed} because you can use it without being
-            connected to a central server.
-        \item \textbf{Version control} 
-        \item Git was created by Linus Torvalds to help facilitate Linux kernel
-            development.
-        \item Linus's motto when he built Git was to take Concurrent Version
-            System (CVS) as an example of what \textit{not} to do and if in
-            doubt, make the opposite decision.  \footnotemark
-    \end{itemize}
+    Git is a very popular version control system.
 
-    \uncover<3>{\footnotetext[1]{https://en.wikipedia.org/wiki/Git}}
+    Services such as GitHub and GitLab provide free hosting for Git
+    repositories.
+
+    It has become the de-facto industry standard for source control.
+
 \end{frame}
 
 \section{Understanding the Git data model}
 
-\begin{frame}
-    \frametitle{Why use Git?}
+\begin{frame}{Git is a distributed version control system}
+    \textbf{Distributed} because you can use it without being connected to a
+    central server. You have a full copy of the code on your own computer.
 
-    Git is a VCS so it solves all of the issues I've described. So why use Git
-    over some other VCS?\footnotemark
+    \textbf{Version control} because it keeps track of changes to files.
+
+    \pause
+
+    \textbf{But how does it keep track of all of the changes?}
+\end{frame}
+
+\begin{frame}{Commits: what are they?}
+    \textbf{Commits} are composed of two pieces of information: the previous
+    commit(s) and a set of changes to be applied to those commits.\footnote[frame]{
+        This is a bit of a lie, more on that later.}
+
+    Commits reference their parent(s).
+
+    \begin{center}
+        \includegraphics[width=65mm]{graphics/branching5.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Commits: creating}
+    You can create a commit by running \texttt{git commit}. This will create a
+    commit based on the checked-out commit with the changes that you have
+    ``staged''.
+    \pause
 
     \begin{itemize}[<+->]
-        \item It's a \textit{distributed} VCS. That means that you have a full
-            copy of the code and every change ever made by anyone to that code
-            on your local machine. A beneficial side effect of this is that you
-            can work offline.
-        \item It's faster.
-        \item Git rarely fully deletes anything, this is good because you can
-            undo most actions.
-        \item Everyone else is using it.
+        \item You can stage changes by running \texttt{git add} and passing a
+            list of files.
+        \item You can stage all changes by running \texttt{git add -A}.
     \end{itemize}
 
-    \footnotetext[2]{List inspired by
-    \url{https://www.git-tower.com/blog/8-reasons-for-switching-to-git}}
+    \pause[\thebeamerpauses]
+    If you want to remove from the stage, you can run \texttt{git reset}
+    (optionally passing a list of files to unstage).
 \end{frame}
 
-\begin{frame}
-    \frametitle{How to Get Git}
+\begin{frame}[fragile]{Commits: what will be committed?}
+    If you ever want to know what will be included in your commit, you can run
+    \texttt{git status} to show the list of files staged for commit.
+    \pause
 
-    Git is awesome! How do I get it? \textbf{Good news: Git is cross platform.}
+    {
+        \tiny
+        \begin{minted}{text}
+        > git status
+        On branch master
+        Your branch is up to date with 'origin/master'.
 
-    \begin{itemize}
-        \item \textbf{Linux:} Install the \texttt{git} package using your
-            distribution's package manager
-        \item \textbf{OS X:} I recommend using Homebrew: \texttt{brew install git}
-            (\url{http://brew.sh/})
-        \item \textbf{Windows:} Download the installer from \url{https://git-scm.com/}
-    \end{itemize}
+        Changes to be committed:
+          (use "git restore --staged <file>..." to unstage)
+                modified:   git.tex
 
-    If you need a GUI, check out SourceTree or GitKraken.
+        Changes not staged for commit:
+          (use "git add <file>..." to update what will be committed)
+          (use "git restore <file>..." to discard changes in working directory)
+                modified:   git.pdf
+                modified:   git.tex
+        \end{minted}
+    }
 
-    You should also setup SSH which is extremely easy, but I will not cover that
-    here as this is a talk about Git not SSH.
+    \pause
+    The \texttt{git.tex} file has only some lines staged for commit.
 \end{frame}
 
-\begin{frame}
-    \frametitle{Hot to use Git (locally)}
+\begin{frame}[fragile]{Commits: what will be committed, but with more detail?}
+    To see the details of the changes that are staged (that is, will be
+    committed), you can run \texttt{git diff --cached}.
 
-    \begin{itemize}
-        \item Initialize (\texttt{git init}): Initializes a Git
-            \textit{repository} on your local machine in the current
-            \textit{working directory}.
-        \item Add (\texttt{git add}): Marks files to include in the next
-            \textit{commit}, an entity which stores the state of the repository
-            at a given time.
-        \item Reset (\texttt{git reset}): Opposite of \texttt{add}; marks the
-            file as not included in the next commit.
-        \item Commit (\texttt{git commit}): Creates a commit.
-        \item Log (\texttt{git log}): Shows the history of your repository.
-        \item Diff (\texttt{git diff [file]}): Determines the difference between
-            the file's current state and its state at the last commit.
-        \item Git ignore (modify the \texttt{.gitignore} file): Any file that
-            matches one of the patterns in \texttt{.gitignore} will not be
-            tracked by Git.
-    \end{itemize}
+    If you want to see the details of the changes that are \textit{not} staged,
+    you can run \texttt{git diff}.
+
+    \texttt{git diff} optionally accepts a list of files to diff.
+    \pause
+
+    {
+        \tiny
+        \begin{minted}{text}
+            diff --git a/git.tex b/git.tex
+            index 2c01a7b..91148d1 100644
+            --- a/git.tex
+            +++ b/git.tex
+            @@ -33,9 +33,7 @@
+
+             \section{Why use Git?}
+
+            -\begin{frame}{Why use Git? I}
+            -
+            -    Example Scenario:
+            +\begin{frame}{Example Scenario 1}
+
+                 \begin{enumerate}[<+->]
+                     \item You start a project called ``my-proj'' and write a ton of code.
+        \end{minted}
+    }
+\end{frame}
+
+\begin{frame}{Commits: summary}
+    Use \texttt{git add} and \texttt{git reset} (or variants) to stage/unstage
+    changes for your.
+    \pause
+
+    Use \texttt{git commit} to create a commit from the currently staged changes
+    (which you can see by running \texttt{git diff --cached}).
+\end{frame}
+
+\begin{frame}{Branches}
+    ohea
+\end{frame}
+
+\begin{frame}{Advanced Topics}
+    Gitignore
 \end{frame}
 
 \begin{frame}
