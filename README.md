@@ -4,8 +4,10 @@ A presentation about how to understand and use Git.
 
 ## Topics
 
-- What is Git and why you should use it
-- How to install Git and use it locally
-- Merging
+- Why use Git?
+- Commits
 - Branches
-- Cool Tips
+- Merging
+- Rebasing
+- Remotes
+- Advanced tips

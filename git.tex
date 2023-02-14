@@ -8,6 +8,10 @@
 \institute{Mines ACM}
 \date{14 February 2023}
 
+\makeatletter
+\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
+\makeatother
+
 \begin{document}
 
 \begin{frame}{A bit about me}
@@ -120,6 +124,20 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{Commits: they form a DAG, and are stored on the ``heap''}
+
+    Commits form a Directed Acyclic Graph (DAG). There are no loops in the
+    graph, and every commit points to its parent(s).
+
+    Every single commit is stored in the \texttt{.git} directory of your
+    repository\footnote[frame]{Technically another lie.} which can be thought of
+    like a ``heap'' for commits. The parents of a commit are also stored in this
+    ``heap''.
+
+    We will return to this fact when we talk about \textit{branches}.
+
+\end{frame}
+
 \begin{frame}{Commits: creating}
     You can create a commit by running \texttt{git commit}. This will create a
     commit based on the checked-out commit with the changes that you have
@@ -214,7 +232,15 @@
     \textit{Branches} section is mainly from
     \url{https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell}}}
 
-    Branches are \textbf{pointers} to a specific commit.
+    Remember how we said that the \texttt{.git} directory is like a ``heap'' for
+    commits?
+
+    \textbf{Branches are pointers to a specific commit in that heap.} You can
+    then follow that commit's parent pointers to reconstruct the graph.
+\end{frame}
+
+\begin{frame}{Branches: pointers}
+
 
     \begin{center}
         \includegraphics[height=50mm]{graphics/branching1}
@@ -510,9 +536,57 @@
 
 \section{Rebasing}
 
-\begin{frame}{Rebasing: maintaining linear histories}
+\begin{frame}[fragile]{Rebasing: maintaining linear histories}
+    Most merge commits are useless. They clutter the history, and normally don't
+    add anything of value to the understanding of how the codebase evolved.
+
+    {
+        \tiny
+        \begin{minted}{text}
+            * b08107c (HEAD -> master, origin/master, origin/HEAD) fix some things
+            *   6c1f8b5 Merge branch 'master' of github.com:ColoradoSchoolOfMines/mineshspc.com
+            |\
+            | * 67f0f4d fix background color bug
+            * | 47bc626 Fix accordion
+            |/
+            * 186b52a Archive overhaul
+            * 385666b Fix accordion arrows
+        \end{minted}
+    }
+    \pause
+
+    Ideally the above history would be linear:
+
+    {
+        \tiny
+        \begin{minted}{text}
+            * b08107c (HEAD -> master, origin/master, origin/HEAD) fix some things
+            * 47bc626 Fix accordion
+            * 67f0f4d fix background color bug
+            * 186b52a Archive overhaul
+            * 385666b Fix accordion arrows
+        \end{minted}
+    }
 
 \end{frame}
+
+\begin{frame}{Rebasing: what it does}
+    Rebasing allows you to take the commits from one branch and reapply them on
+    top of another branch.
+
+    \begin{center}
+        \only<1>{\includegraphics[height=40mm]{graphics/basic-rebase-1}}
+        \only<2>{\includegraphics[height=30mm]{graphics/basic-rebase-3}}
+    \end{center}
+\end{frame}
+
+\section{Remotes}
+
+\begin{frame}{Remotes: what are they?}
+    A remote is 
+\end{frame}
+
+\section{Advanced Tips}
 
 \begin{frame}{Advanced Topics}
     Gitignore
@@ -554,148 +628,6 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Merging Changes I}
-
-    What happens if multiple developers make changes to the same file? This will
-    cause \textit{merge conflicts}.\\
-
-    There are plenty of tools which you can use to \textit{resolve} such
-    conflicts. None of them are that good because merge conflicts are just
-    terrible in general.\\
-
-    Play around with a bunch of them and see which one you like best. Here are a
-    few to get you started: \texttt{Meld}, \texttt{KDiff3}, and
-    \texttt{vimdiff}.\\
-\end{frame}
-
-\begin{frame}
-    \frametitle{Merging Changes II}
-
-    Invoking the \textit{mergetool}: use \texttt{git mergetool}.\\
-
-    For each \textit{conflict}, you can choose to take their version, your
-    version, a combination of the two or neither.\\
-
-    Most UIs will give you three panes: one for the \textit{remote} version of
-    the file, one for the \textit{local} version of the file and one for the
-    merged version of the file.
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches I}
-
-    Branches allow you to separate develop a given functionality without
-    affecting the original code base.\\
-
-    For example, if you have an established product and you want to add a
-    feature but you are uncertain about its viability, you can create a branch
-    and build a prototype on that branch. If it fails, you can delete the branch
-    and never see it again or if it works, you can \textit{merge} the branch
-    back into \texttt{master}.
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches\footnotemark II}
-    Branches can be thought of as \textit{bookmarks} pointing to a specific
-    changeset.
-
-    \begin{center}
-        \includegraphics[width=60mm]{graphics/branching1.png}
-    \end{center}
-
-    \textit{Note, \texttt{HEAD} is pointer to the current branch.}
-
-    \footnotetext[3]{Info in the rest of the \textit{Branches} section is mainly
-    from \url{https://git-scm.com/book/en/v1/Git-Branching-What-a-Branch-Is}}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches III}
-    To switch branches, use \texttt{git checkout [branch]}. This moves
-    \texttt{HEAD} to point to your new branch.
-
-    \begin{center}
-        \includegraphics[width=65mm]{graphics/branching2.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches IV}
-    If you commit something to your new branch, the branch pointer moves to the
-    new commit. The pointer to \texttt{master} will not move.
-
-    \begin{center}
-        \includegraphics[width=65mm]{graphics/branching3.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches V}
-    Of course, you can always switch back to \texttt{master} using \texttt{git
-    checkout master}.
-
-    \begin{center}
-        \includegraphics[width=65mm]{graphics/branching4.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches VI}
-    If you make a commit on the master branch, the \texttt{master} pointer moves
-    to that new commit.  At this point, the branch histories have diverged.
-
-    \begin{center}
-        \includegraphics[width=65mm]{graphics/branching5.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branches VII: How to actually do it}
-
-    \begin{itemize}
-        \item \textbf{Create a Branch:} \texttt{git branch [branch\_name]}
-        \item \textbf{Switch to a branch:} \texttt{git checkout [branch\_name]}
-        \item \textbf{Create a new branch and switch to it:}\\ \texttt{git checkout -b [branch\_name]}
-        \item \textbf{List branches:} \texttt{git branch}
-        \item \textbf{Push branch to remote:} \texttt{git push -u [remote\_name] [branch\_name]}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Merging Changes: Branch Edition}
-    If you want changes from a different branch in your current branch, you can use \texttt{git
-    merge [other branch]}.\\
-
-    When you merge changes from another branch, one of two things will happen\footnotemark:
-
-    \begin{enumerate}
-        \item Your branch will be fast-forwarded to the other branch.\\
-            This means that there are no changes in your current branch that are not in the other
-            branch.
-        \item A merge commit will be created and your branch pointer will be updated to point to
-            this commit.\\
-            This happens when there are changes in the current branch that are not in the other
-            branch.
-    \end{enumerate}
-
-    \footnotetext[4]{These are the only ones I can thing of off the top of my head. You can force
-    either of these functionalities with their respective command line options.}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Branch and Development Workflow}
-
-    Branches are extremely scalable so you can ignore them, or use them for everything, it's your
-    choice.\\
-
-    One methodology used by companies in the industry is \texttt{Git Flow}. This is a system
-    whereby new branches are created for every bugfix, new feature, release, and hotfix. If you want
-    to learn more about it, look at this website:
-    \url{http://nvie.com/posts/a-successful-git-branching-model/}
-\end{frame}
-
-\begin{frame}
     \frametitle{The Random Stuff: Stashing}
 
     When you have changes in your working directory, merges and switching branches (sometimes)
@@ -723,17 +655,6 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{The Random Stuff: Rebasing}
-
-    \textbf{What is it good for?} If you want to keep your graph clean, you can use rebasing to
-    avoid merge commits.\\
-
-    \textbf{Why would you use this?} I don't know. I never have and I normally want to see all of
-    the changes in a graph, but it's a thing that you can do in Git and if you want to learn more,
-    read the docs.
-\end{frame}
-
-\begin{frame}
     \frametitle{The Random Stuff: Aliases}
 
     As one would expect from something designed and built by Linus Torvalds, Git supports the
@@ -757,9 +678,10 @@
     \begin{itemize}
         \item \texttt{man git *}: The man pages on Git are good. Use them as your first line of
             defense.
-        \item \texttt{git-scm.com/book/en/v2}: A huge resource about how to do everything Git.
-        \item \texttt{gitignore.io}: Generates a \texttt{.gitignore} file for a given project type,
-            OS, and IDE.
+        \item \href{https://git-scm.com/book/en/v2}{git-scm.com/book/en/v2}: A
+            huge resource about how to do everything Git.
+        \item \href{https://gitignore.io}{gitignore.io}: Generates a
+            \texttt{.gitignore} file for a given project type, OS, and IDE.
         \item \texttt{git reset --hard HEAD}: Undoes all changes since the last commit.
         \item \texttt{git diff HEAD:file1 file2}: Shows the difference between \texttt{file1} and
             \texttt{file2}.
