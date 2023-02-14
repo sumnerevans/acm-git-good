@@ -94,8 +94,6 @@
 
 \end{frame}
 
-\section{Understanding the Git data model}
-
 \begin{frame}{Git is a distributed version control system}
     \textbf{Distributed} because you can use it without being connected to a
     central server. You have a full copy of the code on your own computer.
@@ -107,6 +105,8 @@
     \textbf{But how does it keep track of all of the changes?}
 \end{frame}
 
+\section{Commits}
+
 \begin{frame}{Commits: what are they?}
     \textbf{Commits} are sets of differences (diffs) in
     files.\footnote[frame]{This is a bit of a lie, more on that later.}
@@ -116,7 +116,7 @@
     made in the repo since that parent commit.
 
     \begin{center}
-        \only<2>{\includegraphics[width=65mm]{graphics/branching5.png}}
+        \only<2>{\includegraphics[height=55mm]{graphics/branching5}}
     \end{center}
 \end{frame}
 
@@ -208,34 +208,316 @@
     (which you can see by running \texttt{git diff --cached}).
 \end{frame}
 
+\section{Branches}
+
 \begin{frame}{Branches: what are they?\footnote[frame]{Info in the rest of the
     \textit{Branches} section is mainly from
-    \url{https://git-scm.com/book/en/v1/Git-Branching-What-a-Branch-Is}}}
+    \url{https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell}}}
 
     Branches are \textbf{pointers} to a specific commit.
 
     \begin{center}
-        \includegraphics[width=60mm]{graphics/branching1.png}
+        \includegraphics[height=50mm]{graphics/branching1}
     \end{center}
-
-    \textit{Note, \texttt{HEAD} is pointer to the current branch.}
 \end{frame}
 
 \begin{frame}{Branches: creating them}
-    Branches can be created using the \texttt{git branch} command. \textbf{This
-    will not change your \texttt{HEAD} pointer.}
+    Branches can be created using the \texttt{git branch <branch name>} command.
+    \textbf{This will not change your \texttt{HEAD} pointer.}
+
+    \begin{center}
+        \includegraphics[height=35mm]{graphics/branching-creating}
+    \end{center}
 
     If you want to create a branch and also change the \texttt{HEAD} pointer to
     the newly created branch, you can use:\\
     \texttt{git checkout -b <branch name>}.
+    \pause
+
+    You can use \texttt{git branch [-a]} to list (all) branches.
 \end{frame}
 
-\begin{frame}{Branches: moving them around}
+\begin{frame}{Branches: moving \texttt{HEAD} around}
+    \texttt{HEAD} is a special pointer to the current repository state.
+    Checking out a commit/branch will update the files in your working
+    directory.
+
+    You can move the \texttt{HEAD} pointer to a different commit using\\
+    \texttt{git checkout <commit hash or branch name>}.
+
+    \only<1>{\begin{center}
+        \includegraphics[height=45mm]{graphics/branching-moving-1}
+    \end{center}}
+    \only<2>{\begin{center}
+        \includegraphics[height=45mm]{graphics/branching2}
+    \end{center}}
+
+\end{frame}
+
+\begin{frame}{Branches: \texttt{checkout} gotchas and pro-tips}
+    \begin{itemize}
+        \item If you checkout a commit hash, you will be in a \texttt{detached
+            HEAD} state because your \texttt{HEAD} pointer is not pointing to a
+            branch.
+            \pause
+
+        \item If you have uncommitted changes, switching branches \textit{might}
+            fail.
+            \pause
+
+            You can use \texttt{git stash} to save the changes in your working
+            directory, then \texttt{checkout} the other branch, and then
+            \texttt{git stash pop} to restore the changes.
+
+            Alternatively, you can just create a WIP commit and then switch to
+            the other branch.
+    \end{itemize}
+    \pause
+
+    \textbf{Pro tip}: You can use \texttt{-} to refer to the previously checked
+    out object.
+\end{frame}
+
+\begin{frame}{Branches: making commits}
+    If you commit something while \texttt{HEAD} is pointed to a branch, both
+    \texttt{HEAD} and your branch will move to the new commit.
+
+    \only<1>{\begin{center}
+        \includegraphics[height=45mm]{graphics/branching2}
+    \end{center}}
+    \only<2>{\begin{center}
+        \includegraphics[height=45mm]{graphics/branching3}
+    \end{center}}
+\end{frame}
+
+\begin{frame}{Branches: using multiple branches}
+    Of course, you can always switch back to \texttt{master} using \texttt{git
+    checkout master}.
+
+    \begin{center}
+        \includegraphics[width=110mm]{graphics/branching4}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Branches: divergence}
+    If you make a commit on the master branch, the \texttt{master} pointer moves
+    to that new commit creating \textbf{divergent} branch histories.
+
+    \begin{center}
+        \includegraphics[width=110mm]{graphics/branching5}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Branches: where am I?}
+    Often, you want to get a summary of where you are in the repository. That's
+    where \texttt{git log} comes in.
+
+    {
+        \tiny
+        \begin{minted}{text}
+            > git log
+            commit b08107c144003ba42495995d59234595d2d875b4 (HEAD -> master, origin/master, origin/HEAD)
+            Author: Sumner Evans <me@sumnerevans.com>
+            Date:   Mon Feb 13 14:35:57 2023 -0700
+
+                fix some things
+
+                Signed-off-by: Sumner Evans <me@sumnerevans.com>
+
+            commit 6c1f8b53ac774dc6b0376810b4745951bd572519
+            Merge: 47bc626 67f0f4d
+            Author: Ethan Richards <42894274+ezrichards@users.noreply.github.com>
+            Date:   Mon Feb 13 14:06:08 2023 -0700
+
+                Merge branch 'master' of github.com:ColoradoSchoolOfMines/mineshspc.com
+
+            ...
+        \end{minted}
+    }
+    \pause
+    This is mostly useless. Let's make it better.
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{git log}: but actually good}
+    For \texttt{git log} to be useful, you want it to show \textit{all}
+    branches, show a graph, and get rid of most of the details.
+
+    {
+        \tiny
+        \begin{minted}{text}
+            > git log --all --graph --decorate --oneline
+            * b08107c (HEAD -> master, origin/master, origin/HEAD) fix some things
+            *   6c1f8b5 Merge branch 'master' of github.com:ColoradoSchoolOfMines/mineshspc.com
+            |\
+            | * 67f0f4d fix background color bug
+            * | 47bc626 Fix accordion
+            |/
+            * 186b52a Archive overhaul
+            * 385666b Fix accordion arrows
+            * 3d0f64a Archive preliminary updates
+            * aaae02b Update FAQ and archive pages
+            *   b2a64f7 Merge branch 'master' of github.com:ColoradoSchoolOfMines/mineshspc.com
+            |\
+            | * 1450745 make footer reveal
+            * | f7ddfa2 Fix alt text
+            |/
+            * 0f89721 created student confirm registration page
+            * 7b15e86 editing teams: ensure that you can't change from in-person to remote or vice versa
+            * e15bda6 save team below member list
+            * 853dcd1 add ability to add team members
+            \end{minted}
+    }
+\end{frame}
+
+\begin{frame}{Branches: summary}
+    \begin{itemize}
+        \item Branches are \textbf{pointers} to commits.
+        \item Use \texttt{git checkout} to move between branches.
+        \item Use \texttt{git log} to see where you are.
+    \end{itemize}
+\end{frame}
+
+\section{Merging}
+
+\begin{frame}{Merging: resolving divergent histories\footnote[frame]{Info in the rest of the
+    \textit{Merging} section is mainly from
+    \url{https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging}}}
+
+    If you want to merge the changes from branch \texttt{A} into another branch
+    \texttt{B}, you need to:
+
+    \begin{enumerate}
+        \item Switch to branch \texttt{B} (\texttt{git checkout B})
+        \item Run \texttt{git merge A}.
+    \end{enumerate}
+
+    This will do one of two things: fast-forward or create a merge commit.
+\end{frame}
+
+\begin{frame}{Merging: fast-forwarding}
+
+    If the branch you are merging is directly ahead of the branch you are
+    merging into, Git will just move the pointer in a \textbf{fast-forward
+    merge}.
+
+    \begin{center}
+        \only<1>{\includegraphics[width=90mm]{graphics/merging-1}}
+        \only<2>{\includegraphics[width=90mm]{graphics/merging-2}}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Merging: creating a merge commit}
+    If the branch you are merging has diverged from the one you are merging
+    into, Git will create a merge commit through a \textbf{three-way merge}.
+
+    \begin{center}
+        \only<1>{\includegraphics[height=30mm]{graphics/merging-3way-1}}
+        \only<2>{\includegraphics[height=30mm]{graphics/merging-3way-2}}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Merging: resolving conflicts}
+    Occasionally, this process doesn't go smoothly. If you changed the same part
+    of the same file differently in the two branches you're merging, Git won't
+    be able to merge them cleanly.
+
+    {
+        \tiny
+        \begin{minted}{text}
+            > git merge iss53
+            Auto-merging index.html
+            CONFLICT (content): Merge conflict in index.html
+            Automatic merge failed; fix conflicts and then commit the result.
+        \end{minted}
+    }
+    \pause
+    You can always use \texttt{git status} to see what has been automatically
+    merged and what files have conflicts.
+    {
+        \tiny
+        \begin{minted}{text}
+            > git status
+            On branch master
+            You have unmerged paths.
+              (fix conflicts and run "git commit")
+
+            Unmerged paths:
+              (use "git add <file>..." to mark resolution)
+
+                both modified:      index.html
+
+            no changes added to commit (use "git add" and/or "git commit -a")
+        \end{minted}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Merging: editing files to resolve merge conflicts}
+    You can use a merge tool to resolve conflicts, however I find that it's
+    easier to just manually resolve the conflicts.
+
+    Visual Studio Code has a good UI for this. The process you should follow is
+    as follows:
+
+    \begin{enumerate}
+        \item Open a file with the conflict.
+        \item Find one of the conflict-resolution markers.
+        \item Make edits to resolve the conflict.
+        \item Run \texttt{git add} on the file.
+        \item Repeat steps 1-4 until all conflicts are resolved.
+        \item Run \texttt{git commit} to commit the merge.
+    \end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]{Merging: understanding conflict-resolution markers}
+    In order to find the conflict-resolution markers, search for
+    \texttt{<<<<<<<}. Each conflict-resolution block should look something like
+    this:
+    {
+        \tiny
+        \begin{minted}{text}
+            <<<<<<< HEAD:index.html
+            <div id="footer">contact : email.support@github.com</div>
+            =======
+            <div id="footer">
+             please contact us at support@github.com
+            </div>
+            >>>>>>> iss53:index.html
+        \end{minted}
+    }
+
+    The first part (between \texttt{<<<<<<<} and \texttt{=======}) is what the
+    branch you are merging \textit{into} has. The second part (between
+    \texttt{=======} and \texttt{>>>>>>>}) is what the branch you are merging
+    \textit{from} has.
+    \pause
+
+    Sometimes, you just one one side of the conflict, other times you need to be
+    more nuanced in your merge.
+\end{frame}
+
+\begin{frame}{Merging: summary}
+    \begin{itemize}
+        \item Merging allows you to pull changes from one branch into another
+            branch.
+        \item Use \texttt{git merge A} to merge branch \texttt{A} into the
+            current branch.
+        \item Git will do a fast-forward merge if possible, otherwise it will
+            create a merge commit.
+        \item You might have to resolve merge conflicts.
+    \end{itemize}
+\end{frame}
+
+\section{Rebasing}
+
+\begin{frame}{Rebasing: maintaining linear histories}
 
 \end{frame}
 
 \begin{frame}{Advanced Topics}
     Gitignore
+
+    Aliases
 \end{frame}
 
 \begin{frame}
