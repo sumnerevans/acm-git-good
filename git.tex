@@ -108,14 +108,15 @@
 \end{frame}
 
 \begin{frame}{Commits: what are they?}
-    \textbf{Commits} are composed of two pieces of information: the previous
-    commit(s) and a set of changes to be applied to those commits.\footnote[frame]{
-        This is a bit of a lie, more on that later.}
+    \textbf{Commits} are sets of differences (diffs) in
+    files.\footnote[frame]{This is a bit of a lie, more on that later.}
+    \pause
 
-    Commits reference their parent(s).
+    Commits reference their parent(s) and contain information about the changes
+    made in the repo since that parent commit.
 
     \begin{center}
-        \includegraphics[width=65mm]{graphics/branching5.png}
+        \only<2>{\includegraphics[width=65mm]{graphics/branching5.png}}
     \end{center}
 \end{frame}
 
@@ -129,6 +130,8 @@
         \item You can stage changes by running \texttt{git add} and passing a
             list of files.
         \item You can stage all changes by running \texttt{git add -A}.
+        \item \textbf{Pro tip}: If you want to add specific parts of files, use
+            \texttt{git add -p}.
     \end{itemize}
 
     \pause[\thebeamerpauses]
@@ -205,8 +208,30 @@
     (which you can see by running \texttt{git diff --cached}).
 \end{frame}
 
-\begin{frame}{Branches}
-    ohea
+\begin{frame}{Branches: what are they?\footnote[frame]{Info in the rest of the
+    \textit{Branches} section is mainly from
+    \url{https://git-scm.com/book/en/v1/Git-Branching-What-a-Branch-Is}}}
+
+    Branches are \textbf{pointers} to a specific commit.
+
+    \begin{center}
+        \includegraphics[width=60mm]{graphics/branching1.png}
+    \end{center}
+
+    \textit{Note, \texttt{HEAD} is pointer to the current branch.}
+\end{frame}
+
+\begin{frame}{Branches: creating them}
+    Branches can be created using the \texttt{git branch} command. \textbf{This
+    will not change your \texttt{HEAD} pointer.}
+
+    If you want to create a branch and also change the \texttt{HEAD} pointer to
+    the newly created branch, you can use:\\
+    \texttt{git checkout -b <branch name>}.
+\end{frame}
+
+\begin{frame}{Branches: moving them around}
+
 \end{frame}
 
 \begin{frame}{Advanced Topics}
