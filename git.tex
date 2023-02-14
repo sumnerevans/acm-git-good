@@ -277,7 +277,21 @@
     \only<2>{\begin{center}
         \includegraphics[height=45mm]{graphics/branching2}
     \end{center}}
+\end{frame}
 
+\begin{frame}{Branches: moving other branches around}
+    If you want to move the branch that \texttt{HEAD} is pointing to to a
+    different location, you can use \texttt{git reset}.
+    \pause
+
+    \texttt{git reset --hard <commit hash>} will move the branch that \texttt{HEAD}
+    is pointing to to the specified commit, \textbf{discarding all changes in
+    your working directory}.
+    \pause
+
+    \texttt{git reset --soft <commit hash>} will move the branch that
+    \texttt{HEAD} is pointing to to the specified commit, \textbf{leaving all
+    changes since the specified commit in your working directory}.
 \end{frame}
 
 \begin{frame}{Branches: \texttt{checkout} gotchas and pro-tips}
@@ -626,7 +640,7 @@
     }
 \end{frame}
 
-\begin{frame}[fragile]{Rebasing: interactive rebase continued}
+\begin{frame}[fragile]{Rebasing: interactive rebase (continued)}
     Interactive rebasing can help! Go ahead and create a new ``fix the fix''
     commit:
     {
@@ -752,83 +766,202 @@
     self-hosted options.
 \end{frame}
 
-\begin{frame}{Remotes: managing them}
+\begin{frame}[fragile]{Remotes: managing them}
+    \begin{itemize}
+        \item View all of your remotes with:
+
+            {
+                \footnotesize
+                \begin{minted}{text}
+                    > git remote -v
+                    origin  git@github.com:sumnerevans/acm-git-good.git (fetch)
+                    origin  git@github.com:sumnerevans/acm-git-good.git (push)
+                \end{minted}
+            }
+            \pause
+
+        \item You can add remotes using:
+
+            {
+                \footnotesize
+                \begin{minted}{text}
+                    > git remote add other git@github.com:other/repo.git
+                \end{minted}
+            }
+            \pause
+
+        \item You can change the URL of a remote:
+
+            {
+                \footnotesize
+                \begin{minted}{text}
+                    > git remote set-url origin git@github.com:other/repo.git
+                \end{minted}
+            }
+            \pause
+
+        \item When you clone a repository, it automatically creates a remote
+            called \texttt{origin} that points to your remote repository.
+            \pause
+
+        \item \textbf{Note}: \texttt{origin} is not special, it's just a
+            default.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Remote Branches: what are they?}
+    The remote repository is \textbf{entirely separate from your local
+    repository}. The remote repository has its own set of branches, commits,
+    etc.
+
+    \begin{center}
+        \includegraphics[height=60mm]{graphics/remote-branches-1}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Remote Branches: three new concepts}
+    \begin{enumerate}
+        \item \textbf{Fetch}: to download the current state of the remote
+            repository, use the \texttt{git fetch} command.
+
+            \textbf{Git does not automatically fetch the state of the remote
+            repository!}
+            \pause
+
+        \item \textbf{Push}: to update the remote repository with your local
+            state, use the \texttt{git push} command.
+            \pause
+
+        \item \textbf{Tracking branches}: tracking branches are local branches
+            that have a direct relationship to a remote branch.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Remote Branches: divergence}
+    The state of the local and remote repositories can diverge.
+    \visible<3>{Use \texttt{git fetch} to get the latest state of the remote
+    repository.}
+
+    \begin{center}
+        \only<1>{\includegraphics[height=55mm]{graphics/remote-branches-1}}
+        \only<2>{\includegraphics[height=55mm]{graphics/remote-branches-2}}
+        \only<3>{\includegraphics[height=55mm]{graphics/remote-branches-3}}
+    \end{center}
+    \visible<3>{Now use the tools we already know for divergent branches.}
+\end{frame}
+
+\begin{frame}[fragile]{Remote Branches: divergence (continued)}
+    Git provides a command to fetch and then merge the remote branch into the
+    local branch called \texttt{git pull}.
+    \pause
+
+    \textbf{Warning}: by default, \texttt{git pull} will create a merge commit
+    if the remote branch has diverged from the local one!
+
+    Merge commits are ugly! Use \texttt{git pull --rebase} to tell \texttt{git
+    pull} to rebase your local changes on the remote changes instead.
+    \pause
+
+    \begin{block}{Tell Git to never merge when pulling}
+        You can configure Git to fail instead of making a merge commit by
+        setting the \texttt{pull.ff} configuration option to \texttt{only}.
+        {
+            \begin{minted}{text}
+                > git config --global pull.ff only
+            \end{minted}
+        }
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Remote Branches: pushing}
+    Pushing can be thought of merging your local tracking into the remote
+    tracking branch.
+
+    If your branch is already configured to track a remote branch, you can just
+    use \texttt{git push}.
+    \pause
+
+    If you have a new branch that doesn't have a corresponding remote tracking
+    branch, use
+    {
+        \begin{minted}{text}
+            > git push -u origin <branch name>
+        \end{minted}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Remote Branches: pushing harder}
+    In certain circumstances, you want to push a divergent branch to the remote.
+    Examples include:
+
+    \begin{itemize}
+        \item You did an interactive rebase and need to push the newly rebased
+            changes.
+        \item You reset your branch to a previous commit and want it to be the
+            latest commit on the branch.
+    \end{itemize}
+    \pause
+
+    In these cases, you can use the \texttt{--force} or
+    \texttt{--force-with-lease} options to tell Git to push your local state to
+    the remote regardless of what is currently there.
+
+    \texttt{--force-with-lease} is less dangerous than \texttt{--force} because
+    it will check that your current view of the remote state is up-to-date.
 \end{frame}
 
 \section{Advanced Tips}
 
-\begin{frame}{Advanced Topics}
-    Gitignore
+\begin{frame}{Undoing Things}
+    Commits are kept around in the \texttt{.git} directory (remember, it's like
+    a heap), which means that even if you loose a pointer to a commit (for
+    example by moving all branch pointers away from it), it still exists!
 
-    Aliases
+    You can use \texttt{git reflog} to see the history of when the tips of
+    branches and other references were updated in the local repository.
+    \pause
+
+    If you screwed something up and you don't know what to do,
+    \url{https://ohshitgit.com/} is a great resource.
 \end{frame}
 
-\begin{frame}
-    \frametitle{How to use Git with a remote}
 
-    \begin{itemize}
-        \item Add Remote (\texttt{git remote add [name] [url]}): Adds a
-            \textit{remote}, a version of the repository hosted externally from
-            your local machine. Most likely on something like Github or an
-            company's internal network.
-        \item Push (\texttt{git push -u origin master}): Pushes all changes on
-            the given branch to the remote.
-        \item Clone (\texttt{git clone}): Copies the entire repository to the
-            location.
-        \item Fetch (\texttt{git fetch}): Retrieves changes from the remote.
-        \item Merge (\texttt{git merge}): Merges a branch into another branch.
-            (More on branches later, but in this case, we are merging the
-            \texttt{origin/master} into our local \texttt{master} branch.)
-        \item Pull (\texttt{git pull}): Retrieves any new changes from the
-            remote and merges them with your local changes.
-    \end{itemize}
+\begin{frame}[fragile]{Aliases}
+
+    Git supports the concept of \textit{aliasing} one command to another name.
+
+    For example, you can alias the pretty log command I showed earlier to
+    \texttt{git l} by using the following command:
+    {
+        \scriptsize
+        \begin{minted}{text}
+            > git config --global alias.l "log --oneline --graph --all --decorate"
+        \end{minted}
+    }
+
+    Now you can just type \texttt{git l} to get the pretty version of the log
+    output.
 \end{frame}
 
-\begin{frame}
-    \frametitle{Undoing Things}
+\begin{frame}{Ignoring Files}
+    You can tell Git to not ever commit certain files by ignoring them using the \texttt{.gitignore} file.
 
-    \begin{itemize}
-        \item Undo the last $n$ commits (given that you haven't pushed them yet)
-            \texttt{git reset --hard HEAD\textasciitilde n}
-        \item Undo the $n^{th}$ to last commit by creating a new commit that
-            reverts all of the changes \texttt{git revert HEAD\textasciitilde n}
-        \item Somebody's done it before. Just Google it.
-    \end{itemize}
-\end{frame}
+    Any file that matches one of the patterns in \texttt{.gitignore} will not be
+    tracked by Git.
+    \pause
 
-\begin{frame}
-    \frametitle{The Random Stuff: Submodules}
+    \textbf{Warning}: if you have already committed the file, it will still be
+    tracked.
 
-    \textbf{What is a submodule?} It is literally a repository inside of another repository.\\
-
-    \textbf{Why is this useful?} If you have a custom library shared between many projects, you can
-    place that library in a standalone Git repository. Then you can add it as a submodule to your
-    products via \texttt{git submodule add [clone\_url]}.
-
-    The submodule is its own repository so it can be contributed to independently, but it can also
-    be modified and contributed to as a submodule.
-\end{frame}
-
-\begin{frame}
-    \frametitle{The Random Stuff: Aliases}
-
-    As one would expect from something designed and built by Linus Torvalds, Git supports the
-    concept of \textit{aliasing} one git command to another name.\\
-
-    For example, you might want to alias \texttt{checkout} to \texttt{co}. This particular alias can
-    be achieved using \\ \texttt{git config --global alias.co checkout}.\\
-
-    Now you can invoke \texttt{git checkout} using \texttt{git co}.\\
-
-    Another option is using your shell's alias functionality. This is often more powerful, but that
-    isn't part of this talk.
+    If you want to delete a file from Git, but keep it on your computer, use
+    \texttt{git rm --cached <file>}.
 \end{frame}
 
 \begin{frame}
     \frametitle{The Random Stuff: Resources/Tips}
 
-    I obviously was unable to tell you about everything you can do with Git. I've really only
-    scratched the surface.
+    I obviously was unable to tell you about everything you can do with Git.
+    There are hundreds of options on every single command.
 
     \begin{itemize}
         \item \texttt{man git *}: The man pages on Git are good. Use them as your first line of
@@ -837,23 +970,7 @@
             huge resource about how to do everything Git.
         \item \href{https://gitignore.io}{gitignore.io}: Generates a
             \texttt{.gitignore} file for a given project type, OS, and IDE.
-        \item \texttt{git reset --hard HEAD}: Undoes all changes since the last commit.
-        \item \texttt{git diff HEAD:file1 file2}: Shows the difference between \texttt{file1} and
-            \texttt{file2}.
     \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Where to Go from Here?}
-    \begin{itemize}[<+->]
-        \item If you haven't ever used Git, start by using it locally and with Github.
-        \item If you know the basics, start exploring branches. Learn about them and find a flow
-            which works best for you.
-        \item If you know most things about Git, just keep using it. Try and start remembering how
-            to do certain things that you find yourself often Googleing for. 
-    \end{itemize}
-    Become the person everyone asks for Git advice. It's used in the industry, so many companies
-    will want to see knowledge of this tool.
 \end{frame}
 
 \end{document}
