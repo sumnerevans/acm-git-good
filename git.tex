@@ -37,42 +37,42 @@
 
 \section{Why use Git?}
 
-\begin{frame}{Example Scenario 1}
+% \begin{frame}{Example Scenario 1}
 
-    \begin{enumerate}[<+->]
-        \item You start a project called ``my-proj'' and write a ton of code.
-        \item You finally get it to (kinda) work.
-        \item You decide to make a copy of ``my-proj'' for backup purposes.
-        \item You continue development on ``my-proj'' but then screw something
-            up really bad.
-        \item You decide to revert back to your copy.
-        \item Then you realize your copy doesn't have a bug fix that you
-            actually wanted.
-        \item You then proceed to manually compare the files in the backup to
-            those in your new code and figure out what you still want to have.
-    \end{enumerate}
+%     \begin{enumerate}[<+->]
+%         \item You start a project called ``my-proj'' and write a ton of code.
+%         \item You finally get it to (kinda) work.
+%         \item You decide to make a copy of ``my-proj'' for backup purposes.
+%         \item You continue development on ``my-proj'' but then screw something
+%             up really bad.
+%         \item You decide to revert back to your copy.
+%         \item Then you realize your copy doesn't have a bug fix that you
+%             actually wanted.
+%         \item You then proceed to manually compare the files in the backup to
+%             those in your new code and figure out what you still want to have.
+%     \end{enumerate}
 
-    \uncover<8>{This is terrible.}
-\end{frame}
+%     \uncover<8>{This is terrible.}
+% \end{frame}
 
-\begin{frame}{Example Scenario 2}
+% \begin{frame}{Example Scenario 2}
 
-    \begin{enumerate}[<+->]
-        \item You start working on a project with a partner.
-        \item You write a bunch of code.
-        \item You email the code in a \texttt{.zip} file, then go home for the
-            weekend.
-        \item You and your partner had decided to work on two separate tasks
-            over the weekend so you make some changes to the code and your
-            partner makes some changes to the code.
-        \item You come together and start copying files. Then you realize you
-            both modified \texttt{main()}.
-        \item You then manually determine what changed in both files and
-            reconcile them.
-    \end{enumerate}
+%     \begin{enumerate}[<+->]
+%         \item You start working on a project with a partner.
+%         \item You write a bunch of code.
+%         \item You email the code in a \texttt{.zip} file, then go home for the
+%             weekend.
+%         \item You and your partner had decided to work on two separate tasks
+%             over the weekend so you make some changes to the code and your
+%             partner makes some changes to the code.
+%         \item You come together and start copying files. Then you realize you
+%             both modified \texttt{main()}.
+%         \item You then manually determine what changed in both files and
+%             reconcile them.
+%     \end{enumerate}
 
-    \uncover<7>{This is awful.}
-\end{frame}
+%     \uncover<7>{This is awful.}
+% \end{frame}
 
 \begin{frame}{Version Control Systems}
 
@@ -577,13 +577,182 @@
     \begin{center}
         \only<1>{\includegraphics[height=40mm]{graphics/basic-rebase-1}}
         \only<2>{\includegraphics[height=30mm]{graphics/basic-rebase-3}}
+        \only<3>{\includegraphics[height=30mm]{graphics/basic-rebase-4}}
     \end{center}
+\end{frame}
+
+\begin{frame}{Rebasing: how to rebase}
+    To rebase, follow this procedure:
+
+    \begin{enumerate}
+        \item Checkout the branch that you want to rebase.
+        \item Run \texttt{git rebase A}, where \texttt{A} is the branch or
+            commit you want to rebase onto.
+    \end{enumerate}
+    \pause
+
+    Note that \textbf{rebasing rewrites history}. Generally you should only
+    rebase \textit{local} commits, or branches that you are the only one using.
+\end{frame}
+
+\begin{frame}[fragile]{Rebasing: interactive rebase}
+    Say you are working on a feature branch and you've made the following
+    commits:
+    {
+        \tiny
+        \begin{minted}{text}
+            * 1a2b3c4 (HEAD -> my-feature) add more buzz
+            * 8a9b0c1 fix fizzing
+            * 1d2e3f4 (master) fizz the buzz
+        \end{minted}
+    }
+    \pause
+
+    But you realize that your \texttt{fix fizzing} commit introduced a bug! So
+    you fix the issue but you don't want to end up with a ``fix the fix''
+    commit.\\
+    \pause
+
+    Interactive rebasing can help! Go ahead and create a new ``fix the fix''
+    commit:
+    {
+        \tiny
+        \begin{minted}{text}
+            * a81abe1 (HEAD -> my-feature) fixup! fix fix fizzing
+            * 1a2b3c4 add more buzz
+            * 8a9b0c1 fix fizzing
+            * 1d2e3f4 (master) fizz the buzz
+        \end{minted}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Rebasing: interactive rebase continued}
+    Interactive rebasing can help! Go ahead and create a new ``fix the fix''
+    commit:
+    {
+        \tiny
+        \begin{minted}{text}
+            * a81abe1 (HEAD -> my-feature) fixup! fix fizzing
+            * 1a2b3c4 add more buzz
+            * 8a9b0c1 fix fizzing
+            * 1d2e3f4 (master) fizz the buzz
+        \end{minted}
+    }
+
+    Now, run \texttt{git rebase -i master} to start an interactive rebase. This
+    will open an editor with the following (as well as instructions):
+    {
+        \tiny
+        \begin{minted}{text}
+            pick 8a9b0c1 fix fizzing
+            pick 1a2b3c4 add more buzz
+            pick a81abe1 fixup! fix fizzing
+        \end{minted}
+    }
+    \pause
+
+    Now, you can move the commit order around by editing the file, and also
+    \texttt{fixup} the commit, which will squash the two commits together into
+    one!
+    {
+        \tiny
+        \begin{minted}{text}
+            pick 8a9b0c1 fix fizzing
+            fixup a81abe1 fixup! fix fizzing
+            pick 1a2b3c4 add more buzz
+        \end{minted}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{Rebasing: interactive rebase result}
+    Now, you can move the commit order around by editing the file, and also
+    \texttt{fixup} the commit, which will squash the two commits together into
+    one!
+    {
+        \tiny
+        \begin{minted}{text}
+            pick 8a9b0c1 fix fizzing
+            fixup a81abe1 fixup! fix fizzing
+            pick 1a2b3c4 add more buzz
+        \end{minted}
+    }
+    \pause
+
+    After saving and exiting the editor, Git will rewrite the history of your
+    branch to look like this:
+    {
+        \tiny
+        \begin{minted}{text}
+            * a9bb207 (HEAD -> my-feature) add more buzz
+            * 4e89d4f fix fizzing
+            * 1d2e3f4 (master) fizz the buzz
+        \end{minted}
+    }
+    and the \texttt{fix fizzing} commit will contain the changes from both
+    commits!
+    \pause
+
+    \textbf{Note that you now have different commit hashes!} The old commits are
+    still in tact (you can \texttt{checkout} them), but you have moved your
+    branch (pointer) to the new commit.
+\end{frame}
+
+\begin{frame}[fragile]{Rebasing: interactive rebase shortcut}
+    The workflow I described in the previous slides is so common that there are
+    tools built-in to Git to help you accomplish them.
+
+    \begin{itemize}
+        \item \texttt{git commit --fixup <commit>} automatically marks your
+            commit as a fix of a previous commit. (It uses that \texttt{fixup!}
+            syntax from the previous slide.)
+
+        \item \texttt{git rebase -i --autosquash} opens the editor and
+            automatically reorders the fixup commits when the interactive rebase
+            editor opens and sets them to \texttt{fixup} instead of
+            \texttt{pick}.
+    \end{itemize}
+
+    See
+    \url{https://fle.github.io/git-tip-keep-your-branch-clean-with-fixup-and-autosquash.html}
+    for more details.
+\end{frame}
+
+\begin{frame}{Rebasing: bailing out}
+    If you ever need to cancel a rebase, use \texttt{git rebase --abort}.
+
+    This will restore your repository state to what it was before you started
+    the rebase process.
+\end{frame}
+
+\begin{frame}{Rebasing: other applications}
+    There are lots of other reasons to rebase.
+    \begin{itemize}
+        \item You want to pull in changes from another branch without merging.
+        \item You want to modify a commit that added a file by accident.
+        \item You want to reorder your commits to make it more clear to a code
+            reviewer what you changed.
+        \item Somebody else pushed a commit to the \textit{remote} branch, and
+            you want to add your commit on top of theirs.
+    \end{itemize}
 \end{frame}
 
 \section{Remotes}
 
-\begin{frame}{Remotes: what are they?}
-    A remote is 
+\begin{frame}{Remotes: what are they?\footnote[frame]{Much of the content of
+    this section is from
+    https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes}}
+
+    Remote repositories are versions of your project that are hosted on the
+    Internet or network somewhere. You can have several of them, each of which
+    generally is either read-only or read/write for you.
+    \pause
+
+    GitHub is a popular choice for where to host your remote repositories, but
+    other options exist such as GitLab, sourcehut, Bitbucket, and many other
+    self-hosted options.
+\end{frame}
+
+\begin{frame}{Remotes: managing them}
 \end{frame}
 
 \section{Advanced Tips}
@@ -625,20 +794,6 @@
             reverts all of the changes \texttt{git revert HEAD\textasciitilde n}
         \item Somebody's done it before. Just Google it.
     \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{The Random Stuff: Stashing}
-
-    When you have changes in your working directory, merges and switching branches (sometimes)
-    doesn't work. You have two main options here:
-
-    \begin{enumerate}
-        \item Commit your changes. If you can do this, you should.
-        \item Occasionally you just don't want to commit. In this case, you will want to
-            \textit{stash} your changes using\\ \texttt{git stash [save [stash\_name]]}.
-        \item To un-stash, use \texttt{git stash pop}. You may have to resolve merge conflicts.
-    \end{enumerate}
 \end{frame}
 
 \begin{frame}
