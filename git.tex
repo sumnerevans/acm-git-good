@@ -217,6 +217,41 @@
     }
 \end{frame}
 
+\begin{frame}[fragile]{Commits: showing existing commits}
+    You can view a commit using \texttt{git show <commit hash>}.
+
+    {
+        \tiny
+        \begin{minted}{text}
+            commit cb1b9610e4d34aa66b52e7fb722654679b4529e2
+            Author: Sumner Evans <me@sumnerevans.com>
+            Date:   Tue Jan 31 10:42:58 2023 -0700
+
+                matrix-synapse: 1.76.0rc2 -> 1.76.0
+
+                Signed-off-by: Sumner Evans <me@sumnerevans.com>
+
+            diff --git a/modules/services/matrix/synapse/default.nix b/modules/services/matrix/synapse/default.nix
+            index b142cf0..675ab77 100644
+            --- a/modules/services/matrix/synapse/default.nix
+            +++ b/modules/services/matrix/synapse/default.nix
+            @@ -7,20 +7,20 @@ let
+               # Custom package that tracks with the latest release of Synapse.
+               package = pkgs.matrix-synapse.overridePythonAttrs (old: rec {
+                 pname = "matrix-synapse";
+            -    version = "1.76.0rc2";
+            +    version = "1.76.0";
+                 format = "pyproject";
+
+                 src = pkgs.fetchFromGitHub {
+                   owner = "matrix-org";
+                   repo = "synapse";
+
+            ...
+        \end{minted}
+    }
+\end{frame}
+
 \begin{frame}{Commits: summary}
     Use \texttt{git add} and \texttt{git reset} (or variants) to stage/unstage
     changes for your.
@@ -925,6 +960,14 @@
     \url{https://ohshitgit.com/} is a great resource.
 \end{frame}
 
+\begin{frame}{Cherry-picking}
+
+    You can apply arbitrary commits to your current branch by cherry-picking
+    them.
+
+    This is similar to rebasing.
+
+\end{frame}
 
 \begin{frame}[fragile]{Aliases}
 
@@ -957,8 +1000,17 @@
     \texttt{git rm --cached <file>}.
 \end{frame}
 
-\begin{frame}
-    \frametitle{The Random Stuff: Resources/Tips}
+\begin{frame}{Blaming}
+
+    Want to see the last commit that modified each line of a file? Use
+    \texttt{git blame}.
+
+    This is often a helpful way to see which commit cause a bug or see what
+    needs to be changed when making a similar change.
+
+\end{frame}
+
+\begin{frame}{Resources/Tips}
 
     I obviously was unable to tell you about everything you can do with Git.
     There are hundreds of options on every single command.
@@ -970,6 +1022,8 @@
             huge resource about how to do everything Git.
         \item \href{https://gitignore.io}{gitignore.io}: Generates a
             \texttt{.gitignore} file for a given project type, OS, and IDE.
+        \item \href{https://github.com/dandavison/delta}{delta}: provides a much
+            prettier \texttt{diff} interface.
     \end{itemize}
 \end{frame}
 
