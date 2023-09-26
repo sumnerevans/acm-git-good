@@ -6,7 +6,7 @@
 \subtitle{How to understand Git}
 \author{Sumner Evans}
 \institute{Mines ACM}
-\date{14 February 2023}
+\date{26 September 2023}
 
 \makeatletter
 \patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
@@ -19,8 +19,8 @@
     \begin{itemize}
         \item I graduated from Colorado School of Mines in 2018 with my
             bachelor's in CS and 2019 with a master's in CS.
-        \item I am an adjunct professor. Currently I'm teaching CSCI 341. I've
-            taught 400, 406, and 564 in the past as well.
+        \item I am an adjunct professor. Currently I'm teaching CSCI 406. I've
+            taught 341, 400, and 564 in the past as well.
         \item I enjoy skiing, volleyball, and soccer.
         \item I'm a 4th degree black belt in ATA taekwondo.
     \end{itemize}
@@ -37,42 +37,47 @@
 
 \section{Why use Git?}
 
-% \begin{frame}{Example Scenario 1}
+\begin{frame}
+    \frametitle{Why use Version Control? I}
 
-%     \begin{enumerate}[<+->]
-%         \item You start a project called ``my-proj'' and write a ton of code.
-%         \item You finally get it to (kinda) work.
-%         \item You decide to make a copy of ``my-proj'' for backup purposes.
-%         \item You continue development on ``my-proj'' but then screw something
-%             up really bad.
-%         \item You decide to revert back to your copy.
-%         \item Then you realize your copy doesn't have a bug fix that you
-%             actually wanted.
-%         \item You then proceed to manually compare the files in the backup to
-%             those in your new code and figure out what you still want to have.
-%     \end{enumerate}
+    Example Scenario:
 
-%     \uncover<8>{This is terrible.}
-% \end{frame}
+    \begin{enumerate}[<+->]
+        \item You start a project called "my-proj" and write a ton of code.
+        \item You finally get it to (kinda) work.
+        \item You decide to make a copy of "my-proj" for backup purposes.
+        \item You continue development on "my-proj" but then screw something up
+            really bad.
+        \item You decide to revert back to your copy.
+        \item Then you realize your copy doesn't have a bug fix that you
+            actually wanted.
+        \item You then proceed to manually compare the files in the backup to
+            those in your new code and figure out what you still want to have.
+    \end{enumerate}
 
-% \begin{frame}{Example Scenario 2}
+    \uncover<8>{This is terrible.}
+\end{frame}
 
-%     \begin{enumerate}[<+->]
-%         \item You start working on a project with a partner.
-%         \item You write a bunch of code.
-%         \item You email the code in a \texttt{.zip} file, then go home for the
-%             weekend.
-%         \item You and your partner had decided to work on two separate tasks
-%             over the weekend so you make some changes to the code and your
-%             partner makes some changes to the code.
-%         \item You come together and start copying files. Then you realize you
-%             both modified \texttt{main()}.
-%         \item You then manually determine what changed in both files and
-%             reconcile them.
-%     \end{enumerate}
+\begin{frame}
+    \frametitle{Why use Version Control? II}
 
-%     \uncover<7>{This is awful.}
-% \end{frame}
+    Another Scenario:
+
+    \begin{enumerate}[<+->]
+        \item You start working on a project with a partner.
+        \item You write a bunch of code.
+        \item You email the code in a .zip file, then go home for the weekend.
+        \item You and your partner had decided to work on two separate tasks
+            over the weekend so you make some changes to the code and your
+            partner makes some changes to the code.
+        \item You come together and start copying files. Then you realize you
+            both modified \texttt{main()}.
+        \item You then manually determine what changed in both files and
+            reconcile them.
+    \end{enumerate}
+
+    \uncover<7>{This is awful.}
+\end{frame}
 
 \begin{frame}{Version Control Systems}
 
@@ -327,7 +332,8 @@
 
     \texttt{git reset --soft <commit hash>} will move the branch that
     \texttt{HEAD} is pointing to to the specified commit, \textbf{leaving all
-    changes since the specified commit in your working directory}.
+    changes since the specified commit as staged changes in your working
+    directory}.
 \end{frame}
 
 \begin{frame}{Branches: \texttt{checkout} gotchas and pro-tips}
